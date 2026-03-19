@@ -1,0 +1,96 @@
+repeat wait() until game.Players.LocalPlayer.Character
+
+local player = game.Players.LocalPlayer
+local autofarm = false
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = game.Players.LocalPlayer.PlayerGui
+
+local open = Instance.new("TextButton", gui)
+open.Size = UDim2.new(0,80,0,35)
+open.Position = UDim2.new(0,10,0.5,0)
+open.Text = "Open"
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0,230,0,180)
+frame.Position = UDim2.new(0.35,0,0.3,0)
+frame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+frame.Visible = false
+
+local farm = Instance.new("TextButton", frame)
+farm.Size = UDim2.new(0,180,0,35)
+farm.Position = UDim2.new(0.1,0,0.25,0)
+farm.Text = "Auto Farm OFF"
+
+local speed = Instance.new("TextButton", frame)
+speed.Size = UDim2.new(0,180,0,35)
+speed.Position = UDim2.new(0.1,0,0.5,0)
+speed.Text = "Speed x2"
+
+local redeem = Instance.new("TextButton", frame)
+redeem.Size = UDim2.new(0,180,0,35)
+redeem.Position = UDim2.new(0.1,0,0.75,0)
+redeem.Text = "Redeem Codes"
+
+local close = Instance.new("TextButton", frame)
+close.Size = UDim2.new(0,40,0,25)
+close.Position = UDim2.new(0.8,0,0,0)
+close.Text = "X"
+
+open.MouseButton1Click:Connect(function()
+frame.Visible = true
+end)
+
+close.MouseButton1Click:Connect(function()
+frame.Visible = false
+end)
+
+farm.MouseButton1Click:Connect(function()
+autofarm = not autofarm
+farm.Text = autofarm and "Auto Farm ON" or "Auto Farm OFF"
+end)
+
+speed.MouseButton1Click:Connect(function()
+local hum = player.Character and player.Character:FindFirstChild("Humanoid")
+if hum then
+hum.WalkSpeed = 32
+end
+end)
+
+redeem.MouseButton1Click:Connect(function()
+local codes = {
+"SUB2GAMERROBOT_EXP1",
+"SUB2OFFICIALNOOBIE",
+"AXIORE",
+"BIGNEWS",
+"BLUXXY"
+}
+
+for _,code in pairs(codes) do
+game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code)
+wait(1)
+end
+end)
+
+spawn(function()
+while true do
+if autofarm then
+local char = player.Character
+if char and char:FindFirstChild("HumanoidRootPart") then
+for _,v in pairs(workspace.Enemies:GetChildren()) do
+if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+repeat
+char.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,0,3)
+
+game:GetService("VirtualUser"):Button1Down(Vector2.new(0,0))
+wait(0.2)
+game:GetService("VirtualUser"):Button1Up(Vector2.new(0,0))
+
+until v.Humanoid.Health <= 0 or not autofarm
+end
+end
+end
+end
+wait(1)
+end
+end)
